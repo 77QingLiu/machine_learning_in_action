@@ -1,11 +1,19 @@
 from numpy import *
 import matplotlib
 import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap
+from sklearn import neighbors, datasets
+from sklearn.cross_validation import train_test_split
+import pandas as pd
 import operator
 import os
 os.chdir(r'C:\Users\c244032\Documents\GitHub\machine_learning_in_action\k-近邻算法')
 
+
 class kNN:
+    """
+    kNN classifier from scratch
+    """
     def __init__(self, filename):
         self.filename = filename
 
@@ -108,6 +116,19 @@ class kNN:
         sortedClassCount = sorted(classCount.items(), key=operator.itemgetter(1), reverse=True)
         return sortedClassCount[0][0]
 
+    class kNN_scilearn:
+        def __init__(self):
+            pass
+
+        def fitModel(self):
+
+
+        def _loadData(self):
+            iris = datasets.load_iris()
+            iris.target.shape = (iris.target.shape, 1)
+            np.append(iris.data, iris.target, axis=1)
+http://stackabuse.com/k-nearest-neighbors-algorithm-in-python-and-scikit-learn/
+https://kevinzakka.github.io/2016/07/13/k-nearest-neighbor/
 
 a = kNN(r'data\datingTestSet2.txt')
 a.plotMatrix()
