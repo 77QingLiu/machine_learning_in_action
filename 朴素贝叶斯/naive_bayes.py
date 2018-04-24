@@ -1,16 +1,7 @@
 import numpy as np
-from sklearn import tree
-from sklearn.metrics import precision_recall_curve
-from sklearn.metrics import classification_report
-from sklearn.cross_validation import train_test_split
-from sklearn.preprocessing import LabelEncoder
-from sklearn.pipeline import Pipeline
-from sklearn.tree import DecisionTreeClassifier, export_graphviz
-from sklearn import preprocessing
 from io import StringIO
 import pandas as pd
-import subprocess
-
+import math
 
 def createDataSet():
     ''' 数据读入 '''
@@ -42,15 +33,24 @@ df = createDataSet()
 
 df.head()
 
+def st_norm(x,uci,eci):
+    return 1.0/(math.sqrt(2*math.pi)*eci)*math.e**(-(x - uci)**2/(2*eci**2))
 
-def naive_bayes(data=, feature=):
+def naive_bayes(data, feature):
     # 估计类先验证概率
     N = len(data)
-    #P_pre = data['好瓜'].value_counts().apply(lambda x:'{0:.3f}'.format(x/N))
+    res = {}
+    P_pre = data['好瓜'].value_counts().apply(lambda x:'{0:.3f}'.format(x/N))
+    res['好瓜'] = P_pre.values
     for key, val in feature.items():
-        data[data[key] == val].groupby('好瓜').
-
-from collections import OrderedDict
-pd.Series(OrderedDict({'色泽':'青绿', '根蒂':'蜷缩', '敲声':'浊响', '纹理':'清晰', '脐部':'凹陷', '触感':'硬滑'}))
-df.groupby('好瓜')[['色泽', '根蒂', '敲声', '纹理', '脐部', '触感']].apply(lambda x:x)
-'色泽', '根蒂', '敲声', '纹理', '脐部', '触感'
+        if data[key].dtype.name == 'object':
+            raw = data[data[key] == val]
+            temp = raw.groupby('好瓜')[key].count().apply(lambda x:'{0:.3f}'.format(x/len(raw)))
+            res[key] = temp.values
+        else:
+            raw = data
+            temp = raw.groupby('好瓜')[key].apply(lambda x: st_norm(val ,x.mean(),x.std()))
+            res[key] = temp.values
+    df = pd.DataFrame(res, index=['好瓜：否', '好瓜：是'])
+    return df.prod(axis=1).idxmax()
+naive_bayes(df, {'色泽':'青绿', '根蒂':'蜷缩', '敲声':'浊响', '纹理':'清晰', '脐部':'凹陷', '触感':'硬滑', '密度':0.697, '含糖率':0.460})
