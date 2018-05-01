@@ -54,3 +54,15 @@ def naive_bayes(data, feature):
     df = pd.DataFrame(res, index=['好瓜：否', '好瓜：是'])
     return df.prod(axis=1).idxmax()
 naive_bayes(df, {'色泽':'青绿', '根蒂':'蜷缩', '敲声':'浊响', '纹理':'清晰', '脐部':'凹陷', '触感':'硬滑', '密度':0.697, '含糖率':0.460})
+
+# sklearn
+from sklearn.preprocessing import LabelEncoder
+from sklearn import datasets
+from sklearn.naive_bayes import GaussianNB
+# re-encoding
+for col in ['色泽', '根蒂', '敲声', '纹理', '脐部', '触感']:
+    df[col] = LabelEncoder().fit_transform(df[col])
+
+gnb = GaussianNB()
+y_pred = gnb.fit(df[['色泽', '根蒂', '敲声', '纹理', '脐部', '触感', '密度', '含糖率']], df['好瓜']).predict(df[['色泽', '根蒂', '敲声', '纹理', '脐部', '触感', '密度', '含糖率']])
+print('Number of mislabeled points out of a total {0} points : {1}'.format(len(y_pred), sum(y_pred != df['好瓜'])))
